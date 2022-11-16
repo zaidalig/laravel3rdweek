@@ -52,11 +52,9 @@ class User extends Authenticatable
         return $this->hasMany(UserUploadImage::class);
     }
 
-    public function getRoleNames(): Collection
+    public function products()
     {
-        $this->loadMissing('roles');
-
-        return $this->roles->pluck('name');
+        return $this->hasMany(Product::class);
     }
 
 }
