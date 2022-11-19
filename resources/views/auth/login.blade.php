@@ -44,11 +44,26 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group row">
 
-                                <div class="col-md-6 offset-md-4">
+
+
+                                </div>
+
+                                <div class="col-md-6 offset-md-4 column">
+
                                     <button type="submit" class="btn btn-primary">
                                         Login
                                     </button>
+
+
+                                            <label style="padding-left: 30px">
+                                                <a href="{{ route('forget.password.get') }}">Forgot Password ?</a>
+                                            </label>
+
+
+
+
                                 </div>
                             </form>
 
