@@ -10,6 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Permission\Models\Role;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Collection;
+use App\Models\UserVerify;
 
 class User extends Authenticatable
 {
@@ -26,6 +27,7 @@ class User extends Authenticatable
         'password',
         'confirm_password',
         'image',
+        'is_email_verified'
     ];
 
     /**
@@ -56,5 +58,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Product::class);
     }
+    public function verifyUser(){
+         return $this->hasOne('App\Models\VerifyUser');
+        }
+
 
 }

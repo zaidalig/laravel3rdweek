@@ -10,7 +10,7 @@
                         <div class="card-body">
                             <div class="card-body">
                                 @if (session('status'))
-                                    <div class="alert alert-danger" role="alert">
+                                    <div class="alert alert-primary" role="alert">
                                         {{ session('status') }}
                                         {{ session()->forget('status'); }}
 

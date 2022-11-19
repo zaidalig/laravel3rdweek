@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerifyMail;
 use App\Models\User;
+use App\Models\VerifyUser;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 use Image;
+use Mail;
 use Session;
 
 class AuthController extends Controller
@@ -52,17 +55,31 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            $request->session()->flash('status', 'you are logged in');
-            Log::info('User Logged In');
 
-            return view('auth.dashboard');
+            $user = User::where('email', $request->email)->first();
+            if ($user->verified) {
+                session()->flash('status', 'you are logged in');
+                Log::info('User Logged In');
+                return view('auth.dashboard');
+            }
+
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            session()->flash('email', $request->email);
+            session()->flash('password', $request->password);
+            Log::info('Invalid Login Request');
+
+            session()->flash('status', 'Your Email is not verified');
+            return redirect()->route("login");
+
         }
 
-        $request->session()->flash('email', $request->email);
-        $request->session()->flash('password', $request->password);
+        session()->flash('email', $request->email);
+        session()->flash('password', $request->password);
         Log::info('Invalid Login Request');
 
-        $request->session()->flash('status', 'Wrong Email OR Password');
+        session()->flash('status', 'Wrong Email OR Password');
         return redirect()->route("login");
     }
 
@@ -92,11 +109,8 @@ class AuthController extends Controller
         ]);
         if ($request->hasFile('image')) {
 
-            $user = new User;
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->confirm_password = Hash::make($request->confirm_password);
+            $user = $this->create($request);
+
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
             $image = Image::make($request->file('image'))->resize(150, 100);
@@ -105,18 +119,14 @@ class AuthController extends Controller
             $user->save();
             Log::info(' New User Registered ');
 
-            $request->session()->flash('status', 'You have been registered successfully');
+            session()->flash('status', 'We sent you an email please Verify');
             return view('auth.login');
         }
 
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->confirm_password = Hash::make($request->confirm_password);
-        $user->save();
+        $user = $this->create($request);
+
         Log::info(' New User Registered ');
-        $request->session()->flash('status', 'You have been registered successfully');
+        session()->flash('status', 'We sent you an email please Verify');
         return view('auth.login');
     }
 
@@ -140,14 +150,21 @@ class AuthController extends Controller
      *
      * @return response()
      */
-    public function create(array $data)
+    public function create($request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'confirm_password' => Hash::make($data['confirm_password']),
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'confirm_password' => bcrypt($request->confirm_password),
         ]);
+        $verifyUser = VerifyUser::create([
+            'user_id' => $user->id,
+            'token' => sha1(time()),
+        ]);
+        Mail::to($user->email)
+            ->send(new VerifyMail($user));
+        return $user;
     }
 
     /**
@@ -159,9 +176,8 @@ class AuthController extends Controller
     {
 
         Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
         Log::info('User Logged Out');
+
         return redirect()->route('login');
     }
 
@@ -193,13 +209,13 @@ class AuthController extends Controller
 
             $user->save();
             Log::info('  User Profile Updated ');
-            $request->session()->flash('status', 'Profile Updated');
+            session()->flash('status', 'Profile Updated');
             return redirect()->route('dashboard');
 
         }
         if (!($request->hasFile('image')) && $request->email == Auth::user()->email && $request->name == Auth::user()->name) {
             Log::info('Nothing Updated ');
-            $request->session()->flash('status', 'Nothing Updated');
+            session()->flash('status', 'Nothing Updated');
             return view("auth.dashboard");
         } elseif ($request->email == Auth::user()->email && $request->name != Auth::user()->name) {
             $request->validate([
@@ -209,7 +225,7 @@ class AuthController extends Controller
             $user->name = $request->name;
             $user->save();
             Log::info('Name for user  Updated Successfully');
-            $request->session()->flash('status', 'Name Updated Successfully ');
+            session()->flash('status', 'Name Updated Successfully ');
 
             return view("auth.dashboard");
         } elseif ($request->email != Auth::user()->email && $request->name != Auth::user()->name) {
@@ -221,9 +237,12 @@ class AuthController extends Controller
 
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->verified = 0;
+            Mail::to($user->email)
+                ->send(new VerifyMail($user));
             $user->save();
             Log::info('User Email And Name Updated Successfully');
-            $request->session()->flash('status', 'Email And Name Updated Successfully');
+            session()->flash('status', 'Email And Name Updated Successfully');
 
             return view("auth.dashboard");
         } else {
@@ -232,12 +251,15 @@ class AuthController extends Controller
             ]);
 
             $user->email = $request->email;
+            Mail::to($user->email)
+                ->send(new VerifyMail($user));
+            $user->verified = 0;
             $user->save();
             Log::info('User Email  Updated Successfully');
 
-            $request->session()->flash('status', 'Email  Updated Successfully');
-
-            return view("auth.dashboard");
+            session()->flash('status', 'Verify Email');
+            Auth::logout();
+            return view("auth.login");
         }
     }
 
@@ -252,16 +274,15 @@ class AuthController extends Controller
         $id = Auth::user()->id;
         $user = User::find($id);
 
-
-
         if (!Hash::check(Hash::make($request['old_password']), $user->password)) {
             $user->password = Hash::make($request->old_password);
             $user->save();
             Log::info('User Password Updated Successfully');
 
-            $request->session()->flash('status', 'Password  Updated Successfully');
+            session()->flash('status', 'Password  Updated Successfully');
             return view("auth.dashboard");
 
         }
     }
+
 }

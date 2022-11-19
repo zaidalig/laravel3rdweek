@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\VerifyUser;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -136,7 +137,7 @@ class UserController extends Controller
     {
         $Userdata = User::find($user->id)->first();
         $roles = Role::pluck('name', 'name')->all();
-        $userRole=$Userdata->getRoleNames();
+        $userRole = $Userdata->getRoleNames();
         return view('user.edituser', compact('user', 'roles', 'userRole'));
 
     }
@@ -222,4 +223,32 @@ class UserController extends Controller
         return redirect()->back();
 
     }
+
+    public function verifyUser($token)
+    {
+
+        $verifyUser = VerifyUser::where('token', $token)
+            ->first();
+
+        if (isset($verifyUser)) {
+
+            $user = $verifyUser->user;
+
+            if (!$user->verified) {
+
+                $verifyUser->user->verified = 1;
+                $verifyUser->user->save();
+
+                $status = "Your e-mail is verified. You can now login.";
+            } else {
+                $status = "Your e-mail is already verified. You can now login.";
+            }
+        } else {
+            return redirect()->route('login')
+                ->with('warning', "Sorry your email cannot be identified.");
+        }
+        return redirect()->route('login')
+            ->with('status', $status);
+    }
+
 }
