@@ -7,17 +7,21 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
 class ProductController extends Controller
 {
 
     function __construct()
     {
-         $this->middleware('permission:product-list|product-create|product-edit|product-delete', ['only' => ['index','store']]);
+         $this->middleware('permission:product-list|product-create|product-edit|product-delete|product-approve', ['only' => ['index','store']]);
          $this->middleware('permission:product-create', ['only' => ['create','store']]);
          $this->middleware('permission:product-edit', ['only' => ['edit','update']]);
          $this->middleware('permission:product-delete', ['only' => ['destroy']]);
+         $this->middleware('permission:product-approve', ['only' => ['approve']]);
+
     }
     /**
      * Display a listing of the resource.
@@ -27,8 +31,18 @@ class ProductController extends Controller
     public function index()
     {
         $category = Category::all();
+        $user = Auth::user();
+       $roles=$user->getRoleNames();
+
+       if($roles[0]=='Admin'){
         $product = DB::table('products')->paginate(5);
-        return view('product.products', compact('product','category'));}
+        return view('product.products', compact('product','category','roles'));
+       }
+
+       $product = Product::where('id',$user->id)->paginate(5);
+       return view('product.products', compact('product','category','roles'));
+
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -61,7 +75,10 @@ class ProductController extends Controller
         $request->image
             ->move('product', $imagename);
         $product->image = $imagename;
+        $id=Auth::user()->id;
+        $product->id=$id;
         $product->save();
+
         return redirect()->route('products.index')->with('message', 'Product
     added successfully');
     }
@@ -135,4 +152,14 @@ return view('product.update_product',compact('product','category'));
         return redirect()->back()->with('message', 'Product Deleted Successfully');
 
     }
+
+    public function approve(Product $product )
+    {
+        $product->status='Approved';
+        $product->save();
+        return redirect()->back()->with('message', 'Product Approved Successfully');
+
+    }
+
+
 }

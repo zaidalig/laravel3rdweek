@@ -28,14 +28,16 @@ class PermissionTableSeeder extends Seeder
            'product-create',
            'product-edit',
            'product-delete',
+           'product-approve',
            'user-list',
            'user-create',
            'user-edit',
            'user-delete',
+
         ];
 
         foreach ($permissions as $permission) {
-             Permission::create(['name' => $permission]);
+            Permission::create(['name' => $permission]);
         }
 
     }

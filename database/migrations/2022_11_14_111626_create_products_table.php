@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('catagory')->nullable();
             $table->string('quantity')->nullable();
             $table->string('price')->nullable();
+            $table->string('status')->default('pending');
+            $table->foreign('id')->references('id')->on('users')
+        ->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -27,6 +27,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/edit_profile', [AuthController::class, 'edit_profile'])->name('edit_profile');
     Route::get('change_password', [AuthController::class, 'change_password'])->name('change_password');
     Route::post('check_and_update_password', [AuthController::class, 'check_and_update_password'])->name('check_and_update_password');
+    Route::post('products.approve/{product}',[ProductController::class,'approve']);
     Route::resource('users', UserController::class);
     Route::resource('products', ProductController::class);
     Route::resource('categories', CategoryController::class);

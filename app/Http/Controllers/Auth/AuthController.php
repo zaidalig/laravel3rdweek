@@ -15,6 +15,7 @@ use Illuminate\Validation\Rules\Password;
 use Image;
 use Mail;
 use Session;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -58,6 +59,8 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if ($user->verified) {
+                $user = Auth::user();
+
                 session()->flash('status', 'you are logged in');
                 Log::info('User Logged In');
                 return view('auth.dashboard');
@@ -119,12 +122,15 @@ class AuthController extends Controller
             $user->save();
             Log::info(' New User Registered ');
 
+
+            $user->assignRole('User');
+
             session()->flash('status', 'We sent you an email please Verify');
             return view('auth.login');
         }
 
         $user = $this->create($request);
-
+        $user->assignRole('User');
         Log::info(' New User Registered ');
         session()->flash('status', 'We sent you an email please Verify');
         return view('auth.login');

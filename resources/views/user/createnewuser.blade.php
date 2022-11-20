@@ -83,7 +83,7 @@
 
                                     <div class="form-group  d-flex justify-content-center">
                                         <label style="padding-right: 10px" for=""> Select Role</label>
-                                        <select required class="input_color" name="catagory">
+                                        <select required class="input_color" name="role">
                                             <option value="" selected="">Choose </option>
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role }}">{{ $role }}</option>

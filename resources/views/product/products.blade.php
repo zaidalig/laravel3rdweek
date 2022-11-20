@@ -55,6 +55,8 @@
             <div class="  content-wrapper">
 
 
+
+
                 <div class="d-flex">
                     <div class="mr-auto "></div>
                     <div style="padding: 20px">
@@ -77,13 +79,16 @@
                             <th class="dg_pad">Quantity</th>
                             <th class="dg_pad">Category</th>
                             <th class="dg_pad">Price</th>
+
                             <th class="dg_pad">Product Image</th>
-                            @can('product-delete')
-                                <th class="dg_pad">Delete</th>
-                            @endcan
                             @can('product-edit')
                                 <th class="dg_pad">Edit</th>
                             @endcan
+                            @can('product-delete')
+                                <th class="dg_pad">Delete</th>
+                            @endcan
+
+                            <th class="dg_pad">Status</th>
 
                         </tr>
                         @foreach ($product as $product)
@@ -94,10 +99,10 @@
                                 <td>{{ $product->catagory }}</td>
                                 <td>{{ $product->price }}</td>
                                 <td><img class="img_size" src="/product/{{ $product->image }}" alt=""></td>
+
                                 @can('product-edit')
                                     <td>
                                         <a class="btn btn-primary" href="{{ route('products.edit', $product->id) }}">Edit</a>
-
                                     </td>
                                 @endcan
                                 @can('product-delete')
@@ -110,12 +115,28 @@
                                         </form>
                                     </td>
                                 @endcan
+                                <td>
+                                @if ($roles[0] == 'Admin')
 
+                                        @if ($product->status == 'pending')
+                                            <form action="{{ url('products.approve', $product->id) }}" method="Post">
+                                                @csrf
+
+                                                <button type="submit"
+                                                    onclick="return confirm('Are you sure to Approve this Product ?')"
+                                                    class=" btn btn-danger">Pending</button>
+                                            </form>
+                                        @else
+                                            <h6>{{ $product->status }}</h6>
+                                        @endif
+                                    @else
+                                        <h6>{{ $product->status }}</h6>
+                                    </td>
+                                @endif
                             </tr>
                         @endforeach
                     </table>
                 @endcan
             </div>
         </div>
-
     @endsection

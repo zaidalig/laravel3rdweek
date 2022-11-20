@@ -12,8 +12,9 @@ class Product extends Model
     {
         return $this->hasMany(Category::class);
     }
-    public function users()
+    public function user()
     {
         return $this->hasOne(User::class);
     }
+
 }
