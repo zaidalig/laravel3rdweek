@@ -55,8 +55,22 @@
             <div class="  content-wrapper">
 
 
+                <div style="padding: 20px">
+                    <form action="{{ url('products.search') }}" method="get" role="search">
+                        {{ csrf_field() }}
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Search Products"> <span
+                                class="input-group-btn">
+                                <button style="
+                                margin-left:20px;" type="submit"
+                                    class="btn btn-primary">
+                                    <span class="glyphicon glyphicon-search"> Search Product</span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
 
-
+                </div>
                 <div class="d-flex">
                     <div class="mr-auto "></div>
                     <div style="padding: 20px">
@@ -116,8 +130,7 @@
                                     </td>
                                 @endcan
                                 <td>
-                                @if ($roles[0] == 'Admin')
-
+                                    @if ($roles[0] == 'Admin')
                                         @if ($product->status == 'pending')
                                             <form action="{{ url('products.approve', $product->id) }}" method="Post">
                                                 @csrf
@@ -131,9 +144,9 @@
                                         @endif
                                     @else
                                         <h6>{{ $product->status }}</h6>
-                                    </td>
-                                @endif
-                            </tr>
+                                </td>
+                        @endif
+                        </tr>
                         @endforeach
                     </table>
                 @endcan

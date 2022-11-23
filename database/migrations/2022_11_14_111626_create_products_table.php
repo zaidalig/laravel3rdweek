@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('title')->nullable();
             $table->string('description')->nullable();
             $table->string('image')->nullable();
@@ -22,8 +22,7 @@ return new class extends Migration
             $table->string('quantity')->nullable();
             $table->string('price')->nullable();
             $table->string('status')->default('pending');
-            $table->foreign('id')->references('id')->on('users')
-        ->onDelete('cascade');
+            $table->string('user_id');
             $table->timestamps();
         });
     }

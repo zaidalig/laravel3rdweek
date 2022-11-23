@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\Product;
 class CategoryController extends Controller
 {
-    function __construct()
+    public function __construct()
     {
-         $this->middleware('permission:category-list|category-create|category-edit|category-delete', ['only' => ['index','store']]);
-         $this->middleware('permission:category-create', ['only' => ['create','store']]);
-         $this->middleware('permission:category-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:category-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:category-list|category-create|category-edit|category-delete', ['only' => ['index', 'store']]);
+        $this->middleware('permission:category-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:category-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:category-delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.
@@ -119,5 +119,16 @@ class CategoryController extends Controller
         Log::info(' Category Deleted');
 
         return redirect()->back()->with('message', 'Catagory
-        Deleted sucsessfully');}
+        Deleted sucsessfully');
+    }
+
+    public function search(Request $request)
+    {
+
+        $categories = Category::where('category_name', 'LIKE', "%" . $request->q . "%")->paginate(10);
+        return view('categories.category', compact('categories'));
+
+
+    }
+
 }

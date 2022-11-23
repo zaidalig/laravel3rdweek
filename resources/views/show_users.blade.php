@@ -5,7 +5,26 @@
         <div class="cotainer">
             <div class="row justify-content-center">
                 <div class="col-md-8">
+                    @can('user-search')
+                        <div style="padding: 20px">
+                            <form action="{{ url('users.search') }}" method="get" role="search">
+                                {{ csrf_field() }}
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="q" placeholder="Search User"> <span
+                                        class="input-group-btn">
+                                        <button
+                                            style="background-color: red;
+                                    margin-left:20px;
+                                    "
+                                            type="submit" class="btn btn-default">
+                                            <span class="glyphicon glyphicon-search"> Search User</span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
 
+                        </div>
+                    @endcan
 
                     <div class="card-header d-flex justify-content-between">
                         <h4>All Users</h4>
@@ -57,7 +76,7 @@
                                 <td>
                                     @if (!empty($user->getRoleNames()))
                                         @foreach ($user->getRoleNames() as $v)
-                                            <label class="badge badge-success">{{$v }}</label>
+                                            <label class="badge badge-success">{{ $v }}</label>
                                         @endforeach
                                     @endif
                                 </td>
@@ -75,7 +94,8 @@
                                         <form action="{{ route('users.destroy', $user->id) }}" method="Post">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Are you sure to delete this user ?')"
+                                            <button type="submit"
+                                                onclick="return confirm('Are you sure to delete this user ?')"
                                                 class="btn btn-danger">Delete</button>
                                         </form>
                                     </td>

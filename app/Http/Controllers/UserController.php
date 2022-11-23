@@ -27,6 +27,8 @@ class UserController extends Controller
         $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
         $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:user-search', ['only' => ['search']]);
+
     }
 
     /**
@@ -273,4 +275,33 @@ class UserController extends Controller
             ->with('status', $status);
     }
 
-}
+
+    public function search(Request $request )
+    {
+
+
+        $search_text = $request->q;
+
+
+
+        $user = User::where('name', 'LIKE', "%".$search_text."%")->orwhere('email', 'LIKE', "%".$search_text."%")->paginate(10);
+        return view('show_users', [
+            'users' => $user,
+        ]);
+
+    }
+
+// session()->flash('search',$request->q);
+//         $product = Product::where('id',$user->id)->where
+// (function ($query  ){
+// $search_text=session('search');
+//             $query->where('title', 'LIKE', "%{$search_text}%")->
+//             orwhere('catagory', 'LIKE', "%{$search_text}%")->paginate(10);
+//         })->paginate(5);
+//         dd($product);
+//         return view('product.products', compact('product','category','roles'));
+
+    }
+
+
+

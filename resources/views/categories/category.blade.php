@@ -46,6 +46,22 @@
                     @endif
 
                 </div>
+                <div style="padding: 20px">
+                    <form action="{{ url('categories.search') }}" method="get" role="search">
+                        {{ csrf_field() }}
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="q" placeholder="Search Category by name"> <span
+                                class="input-group-btn">
+                                <button style="background-color: red;
+                                margin-left:20px;
+                                " type="submit" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-search"> Search Category</span>
+                                </button>
+                            </span>
+                        </div>
+                    </form>
+
+                </div>
                 @can('category-create')
                     <div class='div_center'>
                         <h2 class="h2_font">Add Catagory</h2>
