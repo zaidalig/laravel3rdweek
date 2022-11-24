@@ -84,7 +84,8 @@
                         <select required class="input_color" name="catagory">
                             <option value="">Write a Catagory here </option>
                             @foreach ($category as $category)
-                                <option selected="" value="{{ $category->category_name }}" selected>
+                                <option  value="{{ $category->category_name }}"
+                                     {{ ($product->catagory) == $category->category_name ? 'selected' : '' }} >
                                     {{ $category->category_name }}</option>
                             @endforeach
                         </select>

@@ -33,15 +33,32 @@
     label {
         display: inline-block;
         width: 200px;
+        padding-top: 5px;
+        padding-left: 4px;
+        margin: 5px;
+        padding-left: 5px;
 
     }
 
     input {
-        padding-top: 20px;
+        padding-top: 10px;
+        margin: 2px;
     }
 
     .btn {
         margin-right: 10px
+    }
+
+    .category {
+        padding-top: 5px;
+        margin: 5px;
+    }
+
+    .quantity {
+        padding-top: 5px;
+        margin: 3px;
+        margin-bottom: 5px;
+
     }
 </style>
 
@@ -52,22 +69,43 @@
 
         <div class="main-panel">
 
-            <div class="  content-wrapper">
-
+            <div class="   content-wrapper">
+                <form action="{{ url('products.search') }}" method="get" role="search">
+                <div  style ="display:grid; padding:20px"
+                class="d-flex  flex-wrap">
+                    <input type="checkbox" id="pending" name="pending" value="pending">
+                    <label for="pending"> Pending</label><br>
+                    <input type="checkbox" id="approved" name="approved" value="approved">
+                    <label for="approved"> Aprroved</label><br>
+                    <input class="quantity" type="number" id="min_quantity" name="min_quantity">
+                    <label for="min_quantity">Min Quantity</label><br>
+                    <input class="quantity" type="number" id="max_quantity" name="max_quantity">
+                    <label for="max_quantity"> Max Quantity</label><br>
+                    <input class="quantity" type="number" id="min_price" name="min_price">
+                    <label for="min_price">Min Price</label><br>
+                    <input class="quantity" type="number" id="max_price" name="max_price">
+                    <label for="max_price"> Max Price</label><br>
+                    <input class="category" type="text" id="category" name="category">
+                    <label for="category"> Category</label><br><br>
+                </div>
 
                 <div style="padding: 20px">
-                    <form action="{{ url('products.search') }}" method="get" role="search">
+
                         {{ csrf_field() }}
                         <div class="input-group">
                             <input type="text" class="form-control" name="q" placeholder="Search Products"> <span
                                 class="input-group-btn">
+
                                 <button style="
                                 margin-left:20px;" type="submit"
                                     class="btn btn-primary">
                                     <span class="glyphicon glyphicon-search"> Search Product</span>
                                 </button>
+
                             </span>
+
                         </div>
+
                     </form>
 
                 </div>

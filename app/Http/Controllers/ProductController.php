@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
+    public $publicQuery;
 
     public function __construct()
     {
@@ -35,7 +36,7 @@ class ProductController extends Controller
         $roles = $user->getRoleNames();
 
         if ($roles[0] == 'Admin') {
-            $product = DB::table('products')->paginate(5);
+            $product = DB::table('products')->paginate(10);
             return view('product.products', compact('product', 'category', 'roles'));
         }
 
@@ -78,6 +79,12 @@ class ProductController extends Controller
         $product->image = $imagename;
         $id = Auth::user()->id;
         $product->user_id = $id;
+        $user = Auth::user();
+        $roles = $user->getRoleNames();
+
+        if ($roles[0] == 'Admin') {
+            $product->status = "Approved";
+        }
         $product->save();
 
         return redirect()->route('products.index')->with('message', 'Product
@@ -162,27 +169,103 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-
         $category = Category::all();
+
         $user = Auth::user();
         $search_text = $request->q;
         $roles = $user->getRoleNames();
-
         if ($roles[0] == 'Admin') {
-            $product = Product::where('title', 'LIKE', "%" . $search_text . "%")->orwhere('catagory', 'LIKE', "%" . $search_text . "%")->paginate(10);
+            if ($request->q) {
 
+                session()->flash('search', $request->q);
+                $query = Product::where(function ($query) {
+                    $search = session('search');
+
+                    return $query->where('title', 'LIKE', "%" . $search . "%")
+                        ->orWhere('description', 'LIKE', "%" . $search . "%");
+                });
+            } else {
+                $query = Product::all();
+            }
+
+            if ($request->pending) {
+                $query = $query->where('status', '=', 'pending');
+            }
+
+            if ($request->approved) {
+                $query = $query->where('status', '=', 'Approved');
+
+            }
+
+            if ($request->min_quantity) {
+                $query = $query->where('quantity', '>=', $request->min_quantity);
+
+            }
+
+            if ($request->max_quantity) {
+
+                $query = $query->where('quantity', '<=', $request->max_quantity);
+
+            }
+
+            if ($request->min_price) {
+                $query = $query->where('price', '>=', $request->min_price);
+            }
+            if ($request->max_price) {
+                $query = $query->where('price', '<=', $request->max_price);
+            }
+            if ($request->category) {
+                $query = $query->where('catagory', '=', $request->category);
+            }
+
+            $product = $query->all();
             return view('product.products', compact('product', 'category', 'roles'));
         }
 
-        session()->flash('search', $request->q);
-        $product = Product::where('user_id', $user->id)->where
-        (function ($query) {
-            $search_text = session('search');
-            $query->where('title', 'LIKE', '%' . $search_text . '%')->
-                orwhere('catagory', 'LIKE', '%' . $search_text . '%')->
-                orwhere('status', 'LIKE', '%' . $search_text . '%')->
-                orwhere('description', 'LIKE', '%' . $search_text . '%')->paginate(10);
-        })->paginate(5);
+        if ($request->q) {
+
+            session()->flash('search', $request->q);
+            $query = Product::where('user_id', '=', $user->id)
+                ->where(function ($query) {
+                    $search = session('search');
+                    return $query->where('title', 'LIKE', "%" . $search . "%")
+                        ->orWhere('description', 'LIKE', "%" . $search . "%");
+                });
+        } else {
+            $query = Product::where('user_id', '=', $user->id);
+        }
+
+        if ($request->pending) {
+            $query = $query->where('status', '=', 'pending');
+        }
+
+        if ($request->approved) {
+            $query = $query->where('status', '=', 'Approved');
+
+        }
+
+        if ($request->min_quantity) {
+            $query = $query->where('quantity', '>=', $request->min_quantity);
+
+        }
+
+        if ($request->max_quantity) {
+
+            $query = $query->where('quantity', '<=', $request->max_quantity);
+
+        }
+
+        if ($request->min_price) {
+            $query = $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->max_price) {
+            $query = $query->where('price', '<=', $request->max_price);
+        }
+        if ($request->category) {
+            $query = $query->where('catagory', '=', $request->category);
+        }
+        $product = $query->get();
+
         return view('product.products', compact('product', 'category', 'roles'));
 
     }

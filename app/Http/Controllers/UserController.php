@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 use Image;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
 
@@ -86,8 +86,8 @@ class UserController extends Controller
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->confirm_password = Hash::make($request->confirm_password);
+            $user->password = bcrypt($request->password);
+            $user->confirm_password = bcrypt($request->confirm_password);
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
             $image = Image::make($request->file('image'))->resize(150, 100);
@@ -112,8 +112,8 @@ class UserController extends Controller
             $user = new User;
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = Hash::make($request->password);
-            $user->confirm_password = Hash::make($request->confirm_password);
+            $user->password = bcrypt($request->password);
+            $user->confirm_password = bcrypt($request->confirm_password);
 
             if ($request->has('role')) {
                 $user->assignRole($request->input('role'));
