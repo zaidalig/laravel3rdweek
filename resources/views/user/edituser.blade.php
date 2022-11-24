@@ -82,9 +82,9 @@
                                 <div class="form-group  d-flex justify-content-center">
                                     <label style="padding-right: 10px" for=""> Select Role</label>
                                     <select required class="input_color" name="role">
-                                        <option value="" selected="">Choose </option>
+                                        <option >Choose </option>
                                         @foreach ($roles as $role)
-                                            <option  selected=" " value="{{ $role }}" selected>{{ $role }}</option>
+                                            <option   value="{{ $role }}" {{ ($role) == $userRole[0] ? 'selected' : '' }}>{{ $role }}</option>
                                         @endforeach
                                     </select>
                                 </div>

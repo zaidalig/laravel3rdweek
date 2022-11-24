@@ -6,15 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Mail\VerifyMail;
 use App\Models\User;
 use App\Models\VerifyUser;
-use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use Image;
-use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
 
@@ -152,9 +151,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $Userdata = User::find($user->id)->first();
         $roles = Role::pluck('name', 'name')->all();
-        $userRole = $Userdata->getRoleNames();
+        $userRole = $user->getRoleNames();
         return view('user.edituser', compact('user', 'roles', 'userRole'));
 
     }
@@ -275,16 +273,12 @@ class UserController extends Controller
             ->with('status', $status);
     }
 
-
-    public function search(Request $request )
+    public function search(Request $request)
     {
-
 
         $search_text = $request->q;
 
-
-
-        $user = User::where('name', 'LIKE', "%".$search_text."%")->orwhere('email', 'LIKE', "%".$search_text."%")->paginate(10);
+        $user = User::where('name', 'LIKE', "%" . $search_text . "%")->orwhere('email', 'LIKE', "%" . $search_text . "%")->paginate(10);
         return view('show_users', [
             'users' => $user,
         ]);
@@ -301,7 +295,4 @@ class UserController extends Controller
 //         dd($product);
 //         return view('product.products', compact('product','category','roles'));
 
-    }
-
-
-
+}
