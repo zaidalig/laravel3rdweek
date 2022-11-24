@@ -194,7 +194,6 @@ class ProductController extends Controller
 
             if ($request->approved) {
                 $query = $query->where('status', '=', 'Approved');
-
             }
 
             if ($request->min_quantity) {
