@@ -29,8 +29,23 @@ class SetApprovedAndAt extends Command
      */
     public function handle()
     {
-        Product::where('status', 'A')
-            ->update(['status' => 'Approved', 'approved_at' => Carbon::now()]);
+        $product=Product::where('status', 'pending')->get();
+foreach($product as $product){
+
+
+    $product->when(Carbon::now()->diffIndays($product->created_at)==3, function ($q) {
+        $data=['approved_at' => now(),'status'=>'Approved'];
+        return $q->update($data);
+    });
+
+    // if(Carbon::now()->diffIndays($product->created_at)==0){
+
+    // $date=Carbon::now();
+
+    //  $product->update($data);
+
+    }
+          // ->update(['status' => 'Approved', 'approved_at' => Carbon::now()]);
         $this->info('All Products Are Approved');
 
     }

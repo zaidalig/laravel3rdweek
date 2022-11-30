@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -163,6 +164,7 @@ class ProductController extends Controller
     {
         $product->status = 'Approved';
         $product->save();
+        $product->approved_at='Carbon::now()';
         return redirect()->back()->with('message', 'Product Approved Successfully');
 
     }
