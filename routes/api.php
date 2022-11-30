@@ -31,7 +31,6 @@ Route::group(['middleware' => ['cors', 'json.response']], function () {
     name('submitForgetPasswordForm.api');
     Route::post('/submitResetPasswordForm', [ApiAuthController::class,'submitResetPasswordForm'])->
     name('submitResetPasswordForm.api');
-    // ...
 
 });
 
@@ -44,7 +43,6 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResource('product', ApiProductController::class);
     Route::apiResource('category', ApiCategoryController::class);
     Route::apiResource('role', ApiRoleController::class);
-
     Route::post('products.search', [ApiProductController::class, 'search'])->name('prodcuts.search.api');
     Route::post('users.search',[ApiUserController::class,'search'])->name('users.search.api');
     Route::post('category.search',[ApiCategoryController::class,'search'])->name('category.search.api');
@@ -52,6 +50,11 @@ Route::middleware('auth:api')->group(function () {
 
 
 
+});
+
+Route::fallback(function (){
+     $response = ['message' => 'You have Entered Invalid api '];
+    return response($response, 200);
 });
 
 

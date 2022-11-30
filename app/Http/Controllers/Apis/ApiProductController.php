@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ApiProductController extends Controller
 {
@@ -89,6 +90,22 @@ class ApiProductController extends Controller
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'quantity' => 'required|numeric',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
+            'category'=>'required|exists:categories,category_name'
+
+        ]);
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()->all()], 422);
+        }
+        $request->validate([
+
+
+        ]);
         $product = new Product;
         $product->title = $request->title;
         $product->description = $request->description;
@@ -173,19 +190,55 @@ class ApiProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $validator = Validator::make($request->all(), [
+            'price' => 'numeric',
+            'quantity' => 'numeric',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
+            'category'=>'exists:categories,category_name'
 
-        $image = $request->image;
-        if ($image) {
+        ]);
+        if ($validator->fails()) {
+            return response(['errors' => $validator->errors()->all()], 422);
+        }
+
+        if($product){
             $image = $request->image;
-            $imagename = time() . '.' . $image->getClientOriginalExtension();
-            $request->image
-                ->move('product', $imagename);
-            $product->image = $imagename;
+            if ($image) {
+                $image = $request->image;
+                $imagename = time() . '.' . $image->getClientOriginalExtension();
+                $request->image
+                    ->move('product', $imagename);
+                $product->image = $imagename;
 
-            $product->update($request->toArray());
+                $product->update($request->toArray());
+                $user = Auth::user();
+                $roles = $user->getRoleNames();
+
+                if ($roles[0] == 'Admin') {
+                    $product->status = "Approved";
+                    $product->approved_at = Carbon::now();
+                    $product->save();
+                    Log::info('Product Updated ');
+                    $response = ['message' => 'Product  Updated successfully'];
+                    return response($response, 200);
+                }
+
+                if (Auth()->user()->id == $product->user_id) {
+                    $response = ['message' => $product];
+                    return response($response, 200);
+                } else {
+                    $response = ['message' => 'Invalid Data'];
+                    return response($response, 200);
+                }
+                $product->update($request->toArray());
+                $product->save();
+
+                Log::info('Product Updated ');
+                $response = ['message' => 'Product  Updated successfully'];
+                return response($response, 200);
+            }
             $user = Auth::user();
             $roles = $user->getRoleNames();
-
             if ($roles[0] == 'Admin') {
                 $product->status = "Approved";
                 $product->approved_at = Carbon::now();
@@ -194,7 +247,6 @@ class ApiProductController extends Controller
                 $response = ['message' => 'Product  Updated successfully'];
                 return response($response, 200);
             }
-
             if (Auth()->user()->id == $product->user_id) {
                 $response = ['message' => $product];
                 return response($response, 200);
@@ -208,30 +260,12 @@ class ApiProductController extends Controller
             Log::info('Product Updated ');
             $response = ['message' => 'Product  Updated successfully'];
             return response($response, 200);
-        }
-        $user = Auth::user();
-        $roles = $user->getRoleNames();
-        if ($roles[0] == 'Admin') {
-            $product->status = "Approved";
-            $product->approved_at = Carbon::now();
-            $product->save();
-            Log::info('Product Updated ');
-            $response = ['message' => 'Product  Updated successfully'];
-            return response($response, 200);
-        }
-        if (Auth()->user()->id == $product->user_id) {
-            $response = ['message' => $product];
-            return response($response, 200);
-        } else {
-            $response = ['message' => 'Invalid Data'];
-            return response($response, 200);
-        }
-        $product->update($request->toArray());
-        $product->save();
 
-        Log::info('Product Updated ');
-        $response = ['message' => 'Product  Updated successfully'];
-        return response($response, 200);
+        }
+        $response = ['message' => 'Invalid Data'];
+                return response($response, 200);
+
+
 
     }
 

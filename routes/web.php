@@ -41,3 +41,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('roles', RoleController::class);
 
 });
+
+Route::fallback(function (){
+    echo 'Invalid Url';
+});
+
