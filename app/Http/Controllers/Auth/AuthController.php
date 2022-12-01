@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
-use Image;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
