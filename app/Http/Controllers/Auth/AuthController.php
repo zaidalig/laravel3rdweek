@@ -203,37 +203,18 @@ class AuthController extends Controller
         $id = Auth::user()->id;
         $user = User::find($id);
         if ($request->hasFile('image')) {
-
-
-
-            // $user->image = $request->image->getClientOriginalName();
-
-            // $imageName = $request->image->getClientOriginalName();
-            // $image = Image::make($request->image)->resize(150, 100)->save();
-            // dd('zaid');
-            // $path = 'thumbnails/' . $request->image->getClientOriginalName();
-
-
-            $image = $request->file('image');
-        $input['file'] = $request->image->getClientOriginalName().'.'.$image->getClientOriginalExtension();
-
-        $destinationPath = public_path('/thumbnails');
-        $imgFile = Image::make($image);
-        $imgFile->resize(150, 100, function ($constraint) {
-		    $constraint->aspectRatio();
-		})->save($destinationPath.'/'.$input['file']);
-        $destinationPath = public_path('/uploads');
-        $image->move($destinationPath, $input['file']);
-
+            $user->image = $request->image->getClientOriginalName();
+            $imageName = $request->image->getClientOriginalName();
+            $image = Image::make($request->file('image'))->resize(150, 100);
+            $path = 'thumbnails/' . $request->image->getClientOriginalName();
 
             if (Auth::user()->image == 'user.jpg') {
-
                 // we dont want to delete the default image
             } else {
                 File::delete(asset('thumbnails/' . Auth::user()->image));
             }
 
-            // $image->save($path);
+            $image->save($path);
 
             $user->save();
             Log::info('  User Profile Updated ');
