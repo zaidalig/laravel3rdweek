@@ -218,7 +218,7 @@ class AuthController extends Controller
         $input['file'] = $request->image->getClientOriginalName().'.'.$image->getClientOriginalExtension();
 
         $destinationPath = public_path('/thumbnails');
-        $imgFile = Image::make($image->getRealPath());
+        $imgFile = Image::make($image);
         $imgFile->resize(150, 100, function ($constraint) {
 		    $constraint->aspectRatio();
 		})->save($destinationPath.'/'.$input['file']);
