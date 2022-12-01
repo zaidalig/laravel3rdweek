@@ -117,10 +117,9 @@ class AuthController extends Controller
 
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
-            $image = Image::make($request->file('image'))->resize(150, 100);
-            dd('zaid');
+            $image = Image::make($request->file('image'))->resize(150, 100)->stream();
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
-            $image->save($path);
+
             $user->save();
             Log::info(' New User Registered ');
 
