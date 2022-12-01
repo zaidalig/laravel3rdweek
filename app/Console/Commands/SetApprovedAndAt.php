@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Product;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SetApprovedAndAt extends Command
 {
@@ -38,6 +39,7 @@ class SetApprovedAndAt extends Command
             });
 
             $this->info('All Products Are Approved');
+            Log::info('All Products Are Approved');
 
         }
     }
