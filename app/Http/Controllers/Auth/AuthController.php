@@ -205,9 +205,10 @@ class AuthController extends Controller
         if ($request->hasFile('image')) {
 
             $user->image = $request->image->getClientOriginalName();
-            dd('zaid');
+
             $imageName = $request->image->getClientOriginalName();
             $image = Image::make($request->file('image'))->resize(150, 100)->save();
+            dd('zaid');
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
 
             if (Auth::user()->image == 'user.jpg') {
