@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
-use Intervention\Image\Image;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
@@ -118,6 +118,7 @@ class AuthController extends Controller
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
             $image = Image::make($request->file('image'))->resize(150, 100);
+            dd('zaid');
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
             $image->save($path);
             $user->save();
