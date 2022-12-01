@@ -187,6 +187,7 @@
                         </tr>
                         @endforeach
                     </table>
+                    {{ {{ $product->links() }} }}
                 @endcan
             </div>
         </div>
