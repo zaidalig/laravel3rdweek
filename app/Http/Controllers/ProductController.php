@@ -37,13 +37,13 @@ class ProductController extends Controller
         $roles = $user->getRoleNames();
 
         if ($roles[0] == 'Admin') {
-            $product = DB::table('products')->paginate(10);
-            return view('product.products', compact('product', 'category', 'roles'));
+            $products = DB::table('products')->paginate(10);
+            return view('product.products', compact('products', 'category', 'roles'));
         }
 
-        $product = Product::where('user_id', $user->id)->paginate(5);
+        $products = Product::where('user_id', $user->id)->paginate(15);
 
-        return view('product.products', compact('product', 'category', 'roles'));
+        return view('product.products', compact('products', 'category', 'roles'));
 
     }
 

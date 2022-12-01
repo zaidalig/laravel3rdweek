@@ -143,7 +143,7 @@
                             <th class="dg_pad">Status</th>
 
                         </tr>
-                        @foreach ($product as $product)
+                        @foreach ($products as $product)
                             <tr>
                                 <td>{{ $product->title }}</td>
                                 <td>{{ $product->description }}</td>
@@ -187,7 +187,7 @@
                         </tr>
                         @endforeach
                     </table>
-                    {{ $product->links() }}
+                    {{ $products->links() }}
                 @endcan
             </div>
         </div>
