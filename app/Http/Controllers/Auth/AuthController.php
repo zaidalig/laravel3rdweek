@@ -6,17 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Mail\VerifyMail;
 use App\Models\User;
 use App\Models\VerifyUser;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
-use Intervention\Image\Facades\Image;
+use Image;
 use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash ;
+use Illuminate\Support\Facades\Hash as FacadesHash;
 
 class AuthController extends Controller
 {
@@ -117,9 +118,9 @@ class AuthController extends Controller
 
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
-            $image = Image::make($request->file('image'))->resize(150, 100)->stream();
+            $image = Image::make($request->file('image'))->resize(150, 100);
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
-
+            $image->save($path);
             $user->save();
             Log::info(' New User Registered ');
 
@@ -212,6 +213,7 @@ class AuthController extends Controller
             } else {
                 File::delete(asset('thumbnails/' . Auth::user()->image));
             }
+            dd('zaid');
             $image->save($path);
 
             $user->save();
