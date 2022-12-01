@@ -6,18 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Mail\VerifyMail;
 use App\Models\User;
 use App\Models\VerifyUser;
-use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Image;
 use Illuminate\Support\Facades\Mail;
 use Session;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash as FacadesHash;
+use Illuminate\Support\Facades\Hash ;
 
 class AuthController extends Controller
 {
