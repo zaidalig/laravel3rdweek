@@ -32,7 +32,7 @@ class SetApprovedAndAt extends Command
         $product = Product::where('status', 'pending')->get();
         foreach ($product as $product) {
 
-            $product->when(Carbon::now()->diffIndays($product->created_at) == 3, function ($q) {
+            $product->when(Carbon::now()->diffIndays($product->created_at) == 0, function ($q) {
                 $data = ['approved_at' => now(), 'status' => 'Approved'];
                 return $q->update($data);
             });
