@@ -3,10 +3,14 @@
 namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
+use App\Console\Commands\SetApprovedAndAt;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $commands = [
+    Commands\SetApprovedAndAt::class,
+    ];
     /**
      * Define the application's command schedule.
      *
@@ -15,7 +19,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+         $schedule->command('set:Approve')->everyFiveMinutes();
     }
 
     /**
