@@ -209,11 +209,12 @@ class AuthController extends Controller
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
 
             if (Auth::user()->image == 'user.jpg') {
+                dd('zaid');
                 // we dont want to delete the default image
             } else {
                 File::delete(asset('thumbnails/' . Auth::user()->image));
             }
-            dd('zaid');
+
             $image->save($path);
 
             $user->save();
