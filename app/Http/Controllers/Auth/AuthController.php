@@ -203,19 +203,20 @@ class AuthController extends Controller
         $id = Auth::user()->id;
         $user = User::find($id);
         if ($request->hasFile('image')) {
+            dd('zaid');
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
-            $image = Image::make($request->file('image'))->resize(150, 100);
+            $image = Image::make($request->file('image'))->resize(150, 100)->save();
             $path = 'thumbnails/' . $request->image->getClientOriginalName();
 
             if (Auth::user()->image == 'user.jpg') {
-                dd('zaid');
+
                 // we dont want to delete the default image
             } else {
                 File::delete(asset('thumbnails/' . Auth::user()->image));
             }
 
-            $image->save($path);
+            // $image->save($path);
 
             $user->save();
             Log::info('  User Profile Updated ');
