@@ -86,7 +86,6 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
-            $user->confirm_password = bcrypt($request->confirm_password);
             $user->image = $request->image->getClientOriginalName();
             $imageName = $request->image->getClientOriginalName();
             $image = Image::make($request->file('image'))->resize(150, 100);
@@ -112,7 +111,6 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
-            $user->confirm_password = bcrypt($request->confirm_password);
 
             if ($request->has('role')) {
                 $user->assignRole($request->input('role'));

@@ -121,6 +121,10 @@ return [
     |
      */
 
+    'client_id' => '970152480819-s401td2fg09qnurffm087pp05j7gh1l3.apps.googleusercontent.com',
+    'redirect' => 'http://127.0.0.1:8000/login/github/callback',
+    'client_secret' => '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',
+
     'key' => env('APP_KEY'),
 
     'cipher' => 'AES-256-CBC',
@@ -158,7 +162,8 @@ return [
 
         /*
          * Laravel Framework Service Providers...
-        */
+         */
+        Laravel\Socialite\SocialiteServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Illuminate\Auth\AuthServiceProvider::class,
@@ -212,6 +217,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Image' => 'Intervention\Image\Facades\Image',
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
     ])->toArray(),
 
 ];

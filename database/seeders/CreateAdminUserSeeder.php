@@ -18,7 +18,6 @@ class CreateAdminUserSeeder extends Seeder
             'name' => 'zaid',
             'email' => 'admin@email.com',
             'password' => bcrypt('0GOPPQqigWlVhCq@'),
-            'confirm_password' => bcrypt('0GOPPQqigWlVhCq@'),
             'verified'=>'1'
         ]);
 
@@ -30,5 +29,15 @@ class CreateAdminUserSeeder extends Seeder
         $role->syncPermissions($permissions);
 
         $user->assignRole([$role->id]);
+        $permissions=[
+            'category-list',
+            'product-create',
+            'product-edit',
+            'product-delete',
+        ];
+        $role = Role::create(['name' => 'User']);
+        $role->syncPermissions($permissions);
+
+
     }
 }
