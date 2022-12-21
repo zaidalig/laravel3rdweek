@@ -11,13 +11,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use Image;
-use Illuminate\Support\Facades\Mail;
 use Session;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash as FacadesHash;
+use Socialite;
 
 class AuthController extends Controller
 {
@@ -124,7 +122,6 @@ class AuthController extends Controller
             $user->save();
             Log::info(' New User Registered ');
 
-
             $user->assignRole('User');
 
             session()->flash('status', 'We sent you an email please Verify');
@@ -164,7 +161,6 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'confirm_password' => bcrypt($request->confirm_password),
         ]);
         $verifyUser = VerifyUser::create([
             'user_id' => $user->id,
@@ -213,7 +209,6 @@ class AuthController extends Controller
             } else {
                 File::delete(asset('thumbnails/' . Auth::user()->image));
             }
-
             $image->save($path);
 
             $user->save();
@@ -283,9 +278,8 @@ class AuthController extends Controller
         $id = Auth::user()->id;
         $user = User::find($id);
 
-
-        if ( Hash::check($request->old_password, $user->password)) {
-            $user->password = bcrypt($request->new_password);
+        if (!Hash::check(Hash::make($request['old_password']), $user->password)) {
+            $user->password = Hash::make($request->old_password);
             $user->save();
             Log::info('User Password Updated Successfully');
 
@@ -293,13 +287,60 @@ class AuthController extends Controller
             return view("auth.dashboard");
 
         }
-        else{
-            Log::info('Password  incorrect');
+    }
 
-            session()->flash('status', 'Password  incorrect');
-            return redirect()->back();
+    /**
 
+     * Handle Social login request
+
+     *
+
+     * @return response
+
+     */
+
+    public function socialLogin($social)
+    {
+        return Socialite::driver($social)->redirect();
+
+    }
+
+    /**
+
+     * Obtain the user information from Social Logged in.
+
+     * @param $social
+
+     * @return Response
+
+     */
+
+    public function handleProviderCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->user();
+
+        } catch (\Exception$e) {
+            return redirect('dashboard');
         }
+        // check if they're an existing user
+        $existingUser = User::where('email', $user->email)->first();
+        if ($existingUser) {
+            // log them in
+            auth()->login($existingUser, true);
+        } else {
+            // create a new user
+            $newUser = new User;
+            $newUser->name = $user->name;
+            $newUser->email = $user->email;
+            $newUser->google_id = $user->id;
+            $newUser->avatar = $user->avatar;
+            $newUser->avatar_original = $user->avatar_original;
+            $newUser->save();
+            auth()->login($newUser, true);
+        }
+        return redirect()->to('/');
+
     }
 
 }

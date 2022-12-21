@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Str;
+
 class CreateAdminUserSeeder extends Seeder
 {
     /**
@@ -18,9 +18,7 @@ class CreateAdminUserSeeder extends Seeder
             'name' => 'zaid',
             'email' => 'admin@email.com',
             'password' => bcrypt('0GOPPQqigWlVhCq@'),
-            'confirm_password' => bcrypt('0GOPPQqigWlVhCq@'),
-            'verified'=>'1',
-            'remember_token'=>Str::random(10)
+            'verified'=>'1'
         ]);
 
         $role = Role::create(['name' => 'Admin']);
@@ -31,8 +29,14 @@ class CreateAdminUserSeeder extends Seeder
         $role->syncPermissions($permissions);
 
         $user->assignRole([$role->id]);
-
+        $permissions=[
+            'category-list',
+            'product-create',
+            'product-edit',
+            'product-delete',
+        ];
         $role = Role::create(['name' => 'User']);
+        $role->syncPermissions($permissions);
 
 
     }
