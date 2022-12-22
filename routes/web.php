@@ -22,7 +22,8 @@ Route::post('reset-password', [ForgotPasswordController::class, 'submitResetPass
 Route::get('products.search', [ProductController::class, 'search'])->name('prdocuts.search');
 Route::get('categories.search',[CategoryController::class,'search'])->name('categories.search');
 Route::get('users.search',[UserController::class,'search'])->name('users.search');
-
+Route::get('login/google', [AuthController::class, 'socialLogin']);
+Route::get('login/google/callback', [AuthController::class, 'handleProviderCallback']);
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');

@@ -299,9 +299,9 @@ class AuthController extends Controller
 
      */
 
-    public function socialLogin($social)
+    public function socialLogin()
     {
-        return Socialite::driver($social)->redirect();
+        return Socialite::driver('google')->redirect();
 
     }
 
@@ -321,6 +321,7 @@ class AuthController extends Controller
             $user = Socialite::driver('google')->user();
 
         } catch (\Exception$e) {
+
             return redirect('dashboard');
         }
         // check if they're an existing user
@@ -336,6 +337,7 @@ class AuthController extends Controller
             $newUser->google_id = $user->id;
             $newUser->avatar = $user->avatar;
             $newUser->avatar_original = $user->avatar_original;
+            $newUser->verified=1;
             $newUser->save();
             auth()->login($newUser, true);
         }
